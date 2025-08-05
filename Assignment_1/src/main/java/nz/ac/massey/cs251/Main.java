@@ -1,17 +1,146 @@
 package nz.ac.massey.cs251;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+import com.itextpdf.text.*;
+import com.itextpdf.text.Font;
+
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+
+import javax.swing.*;
+
+
+
+public class Main extends JFrame implements ActionListener {
+
+    JMenuBar menuBar = new JMenuBar();
+    RSyntaxTextArea textArea = new RSyntaxTextArea();
+
+    //----------------------------------------JMenu------------------------------------------------
+    JMenu fileMenu = new JMenu("File");
+    JMenu searchMenu = new JMenu("Search");
+    JMenu viewMenu = new JMenu("View");
+    JMenu manageMenu = new JMenu("Manage");
+    JMenu helpMenu = new JMenu("Help");
+
+    //----------------------------------------JMenuItems-------------------------------------------
+
+    JMenuItem newItem = new JMenuItem("New");
+    JMenuItem openItem = new JMenuItem("Open");
+    JMenuItem saveItem = new JMenuItem("Save");
+    JMenuItem exitItem = new JMenuItem("Exit");
+    JMenuItem searchItem = new JMenuItem("Search");
+    JMenuItem selectItem = new JMenuItem("Select");
+    JMenuItem copyItem = new JMenuItem("Copy");
+    JMenuItem pasteItem = new JMenuItem("Paste");
+    JMenuItem cutItem = new JMenuItem("Cut");
+    JMenuItem timeItem = new JMenuItem("Time");
+    JMenuItem aboutItem = new JMenuItem("About");
+    JMenuItem printItem = new JMenuItem("Print");
+
+
+    //----------------------------------------main-------------------------------------------------
+    public static void main(String[] args) { new Main(); }
+
+
+    public Main() {
+        super("Text Editor");
+        initMenu();
+        initText();
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setSize(400, 200);
+        this.setJMenuBar(menuBar);
+        this.setVisible(true);
     }
+
+    //----------------------------------------init------------------------------------------------
+    public void initMenu() {
+        // Add menu items
+
+        menuBar.add(fileMenu);
+        menuBar.add(searchMenu);
+        menuBar.add(viewMenu);
+        menuBar.add(manageMenu);
+        menuBar.add(helpMenu);
+
+        JMenuItem[] items = {
+                newItem, openItem, saveItem, exitItem,
+                searchItem, selectItem, copyItem, pasteItem,
+                cutItem, timeItem, aboutItem, printItem
+        };
+
+        for (JMenuItem item : items) {
+            item.addActionListener(this);
+        }
+
+        fileMenu.add(newItem);
+        fileMenu.add(openItem);
+        fileMenu.add(saveItem);
+        fileMenu.add(exitItem);
+
+        searchMenu.add(searchItem);
+
+        viewMenu.add(selectItem);
+
+        manageMenu.add(copyItem);
+        manageMenu.add(pasteItem);
+        manageMenu.add(cutItem);
+        manageMenu.add(timeItem);
+
+        helpMenu.add(aboutItem);
+        helpMenu.add(printItem);
+
+    }
+
+    public void initText() {
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new BorderLayout());
+        textPanel.add(textArea);
+        textPanel.add(new JScrollPane(textArea));
+        textPanel.setVisible(true);
+        this.add(textPanel);
+    }
+
+    //-------------------------------------action listener----------------------------------------
+    public void actionPerformed(ActionEvent event) {
+
+        JComponent source = (JComponent) event.getSource();
+
+        if (source.equals(openItem)) {
+            openItemAction();
+        } else if (source.equals(newItem)) {
+            new Main();
+        } else if (source.equals(saveItem)) {
+            saveItemAction();
+        } else if (source.equals(exitItem)) {
+            System.exit(0);
+        } else if (source.equals(printItem)) {
+            printItemAction();
+        } else if (source.equals(aboutItem)) {
+            aboutItemAction();
+        } else if (source.equals(searchItem)) {
+            searchItemAction();
+        } else if (source.equals(selectItem)) {
+            textArea.selectAll();
+        } else if (source.equals(copyItem)) {
+            textArea.copy();
+        } else if (source.equals(pasteItem)) {
+            textArea.paste();
+        } else if (source.equals(cutItem)) {
+            textArea.cut();
+        } else if (source.equals(timeItem)) {
+            timeItemAction();
+        }
+
+
+    }
+    //----------------------------------------actions----------------------------------------------
+    private void openItemAction(){}
+    private void saveItemAction() {}
+    private void printItemAction(){}
+    private void aboutItemAction(){}
+    private void searchItemAction(){}
+    private void timeItemAction(){}
 }
