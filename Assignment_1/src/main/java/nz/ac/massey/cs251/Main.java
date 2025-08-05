@@ -7,6 +7,9 @@ import java.awt.event.ActionListener;
 import com.itextpdf.text.*;
 import com.itextpdf.text.Font;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.swing.*;
@@ -137,10 +140,32 @@ public class Main extends JFrame implements ActionListener {
 
     }
     //----------------------------------------actions----------------------------------------------
+
+
+    private void aboutItemAction(){
+        JOptionPane.showMessageDialog( this, """
+            This is our simple text editor powered by Java.
+            optional extras include:
+            
+            Opening files (.txt, .odt, .rtf),
+            Saving files (standard and PDF),
+            Syntax highlighting for source code (.java, .py, etc.)
+            
+            Created by Junyeong and Willow.
+            Version 0.1.1
+            """);// lol@version
+    }
     private void openItemAction(){}
-    private void saveItemAction() {}
+
     private void printItemAction(){}
-    private void aboutItemAction(){}
+
+    private void saveItemAction() {}
+
     private void searchItemAction(){}
-    private void timeItemAction(){}
+
+    private void timeItemAction(){
+        LocalDateTime TnD = LocalDateTime.now();// cant use &
+        DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
+        textArea.append(TnD.format(timeFormat) + " ");
+    }
 }
