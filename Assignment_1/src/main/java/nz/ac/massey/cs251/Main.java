@@ -14,6 +14,10 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.swing.*;
 
+import java.io.*;
+import java.nio.file.Files;
+import org.apache.tika.Tika;
+import java.nio.charset.StandardCharsets;
 
 
 public class Main extends JFrame implements ActionListener {
@@ -155,11 +159,53 @@ public class Main extends JFrame implements ActionListener {
             Version 0.1.1
             """);// lol@version
     }
-    private void openItemAction(){}
+    private void openItemAction(){
+        JFileChooser file_chooser = new JFileChooser();
+        if (file_chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
+        File file = file_chooser.getSelectedFile();
+        try {
+            String content;
+            String lower = file.getName().toLowerCase();
+            if (lower.endsWith(".odt")) {
+                content = new Tika().parseToString(file);
+            } else {
+                content = Files.readString(file.toPath()); // read the whole .txt file
+            }
+            textArea.setText(content);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "*File Open Error*" + e.getMessage());
+        }
+    }
 
-    private void printItemAction(){}
+    private void printItemAction(){
+        try {
+            boolean flag = textArea.print();
+            if (!flag) {
+                JOptionPane.showMessageDialog(this, "Printing cancelled.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Print Error: " + e.getMessage());
+        }
+    }
 
-    private void saveItemAction() {}
+    private void saveItemAction() {
+        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return;
+
+        File file = fileChooser.getSelectedFile();
+        if (!file.getName().toLowerCase().endsWith(".txt")) { // <- make sure it is saved as txt file !
+            file = new File(file.getParentFile(), file.getName() + ".txt");
+        }
+        try { //add message dialog + file overwrite message! <- Junyeong's task.
+            Files.writeString(
+                    file.toPath(),
+                    textArea.getText(),
+                    StandardCharsets.UTF_8
+            );
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "*File Save Error* " + e.getMessage());
+        }
+    }
 
     private void searchItemAction(){}
 
