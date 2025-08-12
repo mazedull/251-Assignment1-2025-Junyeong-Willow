@@ -19,11 +19,16 @@ import java.nio.file.Files;
 import org.apache.tika.Tika;
 import java.nio.charset.StandardCharsets;
 
+import javax.swing.text.Highlighter;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.BadLocationException;
+
 
 public class Main extends JFrame implements ActionListener {
 
     JMenuBar menuBar = new JMenuBar();
     RSyntaxTextArea textArea = new RSyntaxTextArea();
+
 
     //----------------------------------------JMenu------------------------------------------------
     JMenu fileMenu = new JMenu("File");
@@ -73,32 +78,18 @@ public class Main extends JFrame implements ActionListener {
         menuBar.add(helpMenu);
 
         JMenuItem[] items = {
-                newItem, openItem, saveItem, exitItem,
+                newItem, openItem, saveItem, printItem, exitItem,
                 searchItem, selectItem, copyItem, pasteItem,
-                cutItem, timeItem, aboutItem, printItem
+                cutItem, timeItem, aboutItem
         };
 
-        for (JMenuItem item : items) {
-            item.addActionListener(this);
-        }
-
-        fileMenu.add(newItem);
-        fileMenu.add(openItem);
-        fileMenu.add(saveItem);
-        fileMenu.add(exitItem);
+        for (JMenuItem item : items) { item.addActionListener(this); }
+        for (int i=0;i<5;i++){ fileMenu.add(items[i]); }
+        for (int i=7;i<11;i++){ manageMenu.add(items[i]); }
 
         searchMenu.add(searchItem);
-
         viewMenu.add(selectItem);
-
-        manageMenu.add(copyItem);
-        manageMenu.add(pasteItem);
-        manageMenu.add(cutItem);
-        manageMenu.add(timeItem);
-
         helpMenu.add(aboutItem);
-        helpMenu.add(printItem);
-
     }
 
     public void initText() {
@@ -112,36 +103,23 @@ public class Main extends JFrame implements ActionListener {
 
     //-------------------------------------action listener----------------------------------------
     public void actionPerformed(ActionEvent event) {
+        String command = event.getActionCommand();
+        switch (command) {
+            case "New" -> new Main();
+            case "Open" -> openItemAction();
+            case "Save" -> saveItemAction();
+            case "Print" -> printItemAction();
+            case "Exit" -> System.exit(0);
+            case "Search" -> searchItemAction();
+            case "Select" -> textArea.selectAll();
+            case "Copy" -> textArea.copy();
+            case "Paste" -> textArea.paste();
+            case "Cut" -> textArea.cut();
+            case "About" -> aboutItemAction();
+            case "Time" -> timeItemAction();
+            default -> System.err.println("Error, that button doesn't exist. " + command);
 
-        JComponent source = (JComponent) event.getSource();
-
-        if (source.equals(openItem)) {
-            openItemAction();
-        } else if (source.equals(newItem)) {
-            new Main();
-        } else if (source.equals(saveItem)) {
-            saveItemAction();
-        } else if (source.equals(exitItem)) {
-            System.exit(0);
-        } else if (source.equals(printItem)) {
-            printItemAction();
-        } else if (source.equals(aboutItem)) {
-            aboutItemAction();
-        } else if (source.equals(searchItem)) {
-            searchItemAction();
-        } else if (source.equals(selectItem)) {
-            textArea.selectAll();
-        } else if (source.equals(copyItem)) {
-            textArea.copy();
-        } else if (source.equals(pasteItem)) {
-            textArea.paste();
-        } else if (source.equals(cutItem)) {
-            textArea.cut();
-        } else if (source.equals(timeItem)) {
-            timeItemAction();
         }
-
-
     }
     //----------------------------------------actions----------------------------------------------
 
@@ -159,6 +137,7 @@ public class Main extends JFrame implements ActionListener {
             Version 0.1.1
             """);// lol@version
     }
+
     private void openItemAction(){
         JFileChooser file_chooser = new JFileChooser();
         if (file_chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
@@ -166,11 +145,8 @@ public class Main extends JFrame implements ActionListener {
         try {
             String content;
             String lower = file.getName().toLowerCase();
-            if (lower.endsWith(".odt")) {
-                content = new Tika().parseToString(file);
-            } else {
-                content = Files.readString(file.toPath()); // read the whole .txt file
-            }
+            if (lower.endsWith(".odt")) { content = new Tika().parseToString(file); }
+            else { content = Files.readString(file.toPath()); } // read the whole .txt file
             textArea.setText(content);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "*File Open Error*" + e.getMessage());
@@ -207,7 +183,26 @@ public class Main extends JFrame implements ActionListener {
         }
     }
 
-    private void searchItemAction(){}
+    private void searchItemAction(){
+        String word = JOptionPane.showInputDialog(this, "Enter word to find(highlight):");
+        if (word == null || word.isBlank()) return;
+
+        Highlighter highlighter = textArea.getHighlighter();
+        highlighter.removeAllHighlights(); // remove previous highlighted
+        Highlighter.HighlightPainter painter =  new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW); //
+
+        String text = textArea.getText();
+        int indx = text.indexOf(word);
+        while (indx >= 0) {
+            try {
+                highlighter.addHighlight(indx, indx + word.length(), painter);
+                indx = text.indexOf(word, indx + word.length());
+            }
+                catch (BadLocationException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     private void timeItemAction(){
         LocalDateTime TnD = LocalDateTime.now();// cant use &
