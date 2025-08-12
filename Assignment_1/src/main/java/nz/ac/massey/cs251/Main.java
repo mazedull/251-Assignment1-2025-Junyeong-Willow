@@ -19,11 +19,16 @@ import java.nio.file.Files;
 import org.apache.tika.Tika;
 import java.nio.charset.StandardCharsets;
 
+import javax.swing.text.Highlighter;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.BadLocationException;
+
 
 public class Main extends JFrame implements ActionListener {
 
     JMenuBar menuBar = new JMenuBar();
     RSyntaxTextArea textArea = new RSyntaxTextArea();
+
 
     //----------------------------------------JMenu------------------------------------------------
     JMenu fileMenu = new JMenu("File");
@@ -207,7 +212,26 @@ public class Main extends JFrame implements ActionListener {
         }
     }
 
-    private void searchItemAction(){}
+    private void searchItemAction(){
+        String word = JOptionPane.showInputDialog(this, "Enter word to find(highlight):");
+        if (word == null || word.isBlank()) return;
+
+        Highlighter highlighter = textArea.getHighlighter();
+        highlighter.removeAllHighlights(); // remove previous highlighted
+        Highlighter.HighlightPainter painter =  new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW); //
+
+        String text = textArea.getText();
+        int indx = text.indexOf(word);
+        while (indx >= 0) {
+            try {
+                highlighter.addHighlight(indx, indx + word.length(), painter);
+                indx = text.indexOf(word, indx + word.length());
+            }
+                catch (BadLocationException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     private void timeItemAction(){
         LocalDateTime TnD = LocalDateTime.now();// cant use &
