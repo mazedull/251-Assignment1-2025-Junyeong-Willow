@@ -1,0 +1,19 @@
+# Text Editor Default Configuration
+
+editor:
+  # Default text format
+  default_encoding: "UTF-8"
+
+  # Default font settings
+  font:
+    family: "Monospaced"
+    size: 14
+
+  # Default colors
+  background_color: "#FFFF00"  # Yellow background
+  text_color: "#FFFFFF"        # White text
+
+  # Default window size
+  window:
+    width: 800
+    height: 600

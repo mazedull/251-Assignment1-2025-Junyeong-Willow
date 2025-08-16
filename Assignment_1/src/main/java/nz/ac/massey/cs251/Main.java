@@ -4,8 +4,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import com.itextpdf.text.*;
-import com.itextpdf.text.Font;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.io.FileOutputStream;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,6 +44,7 @@ public class Main extends JFrame implements ActionListener {
     JMenuItem newItem = new JMenuItem("New");
     JMenuItem openItem = new JMenuItem("Open");
     JMenuItem saveItem = new JMenuItem("Save");
+    JMenuItem savePdfItem = new JMenuItem("Save as PDF");
     JMenuItem exitItem = new JMenuItem("Exit");
     JMenuItem searchItem = new JMenuItem("Search");
     JMenuItem selectItem = new JMenuItem("Select");
@@ -63,6 +66,7 @@ public class Main extends JFrame implements ActionListener {
         initText();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(400, 200);
+
         this.setJMenuBar(menuBar);
         this.setVisible(true);
     }
@@ -78,14 +82,14 @@ public class Main extends JFrame implements ActionListener {
         menuBar.add(helpMenu);
 
         JMenuItem[] items = {
-                newItem, openItem, saveItem, printItem, exitItem,
+                newItem, openItem, saveItem, savePdfItem, printItem, exitItem,
                 searchItem, selectItem, copyItem, pasteItem,
                 cutItem, timeItem, aboutItem
         };
 
         for (JMenuItem item : items) { item.addActionListener(this); }
-        for (int i=0;i<5;i++){ fileMenu.add(items[i]); }
-        for (int i=7;i<11;i++){ manageMenu.add(items[i]); }
+        for (int i=0;i<6;i++){ fileMenu.add(items[i]); }
+        for (int i=7;i<12;i++){ manageMenu.add(items[i]); }
 
         searchMenu.add(searchItem);
         viewMenu.add(selectItem);
@@ -108,6 +112,7 @@ public class Main extends JFrame implements ActionListener {
             case "New" -> new Main();
             case "Open" -> openItemAction();
             case "Save" -> saveItemAction();
+            case "Save as PDF" -> savePdfAction();
             case "Print" -> printItemAction();
             case "Exit" -> System.exit(0);
             case "Search" -> searchItemAction();
@@ -201,6 +206,26 @@ public class Main extends JFrame implements ActionListener {
             );
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "*File Save Error* " + e.getMessage());
+        }
+    }
+
+    private  void savePdfAction (){
+        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return;
+
+        File file = fileChooser.getSelectedFile();
+        if (!file.getName().toLowerCase().endsWith(".pdf")) {
+            file = new File(file.getParentFile(), file.getName() + ".pdf");
+        }
+
+        try {
+            Document document = new com.itextpdf.text.Document();
+            PdfWriter.getInstance(document, new FileOutputStream(file));
+            document.open();
+            document.add(new Paragraph(textArea.getText()));
+            document.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "*PDF Save Error* " + e.getMessage());
         }
     }
 
