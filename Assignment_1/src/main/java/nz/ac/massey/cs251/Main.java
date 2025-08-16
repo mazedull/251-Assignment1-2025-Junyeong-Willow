@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import javax.swing.*;
 
 import java.io.*;
@@ -148,8 +148,19 @@ public class Main extends JFrame implements ActionListener {
             if (lower.endsWith(".odt")) { content = new Tika().parseToString(file); }
             else { content = Files.readString(file.toPath()); } // read the whole .txt file
             textArea.setText(content);
+            configSyntax(lower);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "*File Open Error*" + e.getMessage());
+        }
+    }
+
+    private void configSyntax(String fileName){
+        if (fileName.endsWith(".java")) {
+            textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        } else if (fileName.endsWith(".py")) {
+            textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PYTHON);
+        } else if (fileName.endsWith(".cpp") || fileName.endsWith(".c")) {
+            textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
         }
     }
 
