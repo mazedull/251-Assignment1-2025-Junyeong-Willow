@@ -146,6 +146,16 @@ public class Main extends JFrame implements ActionListener {
             String content;
             String lower = file.getName().toLowerCase();
             if (lower.endsWith(".odt")) { content = new Tika().parseToString(file); }
+            else if (lower.endsWith(".rtf")) {
+                try (FileInputStream inputSystem = new FileInputStream(file)) {
+                    javax.swing.text.rtf.RTFEditorKit rtfKit = new javax.swing.text.rtf.RTFEditorKit();
+                    javax.swing.text.Document document = rtfKit.createDefaultDocument();
+                    rtfKit.read(inputSystem, document, 0);
+                    content = document.getText(0, document.getLength());
+                } catch (javax.swing.text.BadLocationException e) {
+                    throw new IOException("RTF file read error : " + e.getMessage());
+                }
+            }
             else { content = Files.readString(file.toPath()); } // read the whole .txt file
             textArea.setText(content);
             configSyntax(lower);
